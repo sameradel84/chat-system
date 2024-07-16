@@ -18,12 +18,7 @@ services:
     container_name: cassandra-db
     volumes:
       - ./schema.cql:/docker-entrypoint-initdb.d/schema.cql
-    #command: bash -c "exec /usr/bin/cassandra -f && until cqlsh -f /docker-entrypoint-initdb.d/schema.cql; do sleep 5; done"
-   # healthcheck:
-     # test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
-     # interval: 30s
-     # timeout: 10s
-     # retries: 5
+   
 
   redis:
     image: redis:latest
@@ -34,7 +29,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "8081:80"  # Change host port to 8081 to avoid conflict
+      - "8081:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:

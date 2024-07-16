@@ -5,18 +5,26 @@ import (
 	"chatsystem/models"
 	"encoding/json"
 	"fmt"
+	"time"
+
+	"github.com/gocql/gocql"
 )
 
 // SendMessageService inserts a message into the database and invalidates the cache for the sender and recipient.
 func SendMessageService(msg *models.MessageUser) error {
 	// Insert message into Cassandra database
-	if err := database.Session.Query(`INSERT INTO messages (sender, recipient, content, timestamp) VALUES (?, ?, ?, toTimestamp(now()))`, msg.Sender, msg.Recipient, msg.Content).Exec(); err != nil {
+	query := `INSERT INTO chatsystem.messages (id, sender, recipient, content, timestamp) VALUES (?, ?, ?, ?, ?)`
+	if err := database.Session.Query(query, gocql.TimeUUID(), msg.Sender, msg.Recipient, msg.Content, time.Now().UTC()).Exec(); err != nil {
 		return err
 	}
 
 	// Invalidate cache for messages between sender and recipient
-	cacheKey := fmt.Sprintf("messages:%s:%s", msg.Sender, msg.Recipient)
-	database.InvalidateCache(cacheKey)
+	cacheKeySender := fmt.Sprintf("messages:%s", msg.Sender)
+	cacheKeyRecipient := fmt.Sprintf("messages:%s", msg.Recipient)
+	if err := database.InvalidateCache(cacheKeySender, cacheKeyRecipient); err != nil {
+		return err
+	}
+
 	return nil
 }
 

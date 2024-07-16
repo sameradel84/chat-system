@@ -38,7 +38,8 @@ func InitCassandra() {
 	}
 
 	cluster := gocql.NewCluster(config.Hosts...)
-
+	cluster.Keyspace = config.Keyspace
+	cluster.Consistency = gocql.Quorum
 	Session, err = cluster.CreateSession()
 	if err != nil {
 		log.Fatalf("Unable to connect to Cassandra: %v", err)

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS chatsystem.users (
 );
 
 CREATE TABLE IF NOT EXISTS chatsystem.messages (
-    
+    id UUID PRIMARY KEY,
     sender text,
     recipient text,
     content text,

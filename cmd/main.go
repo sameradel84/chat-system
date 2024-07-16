@@ -9,6 +9,7 @@ import (
 func main() {
 	// Initialize Redis
 	database.InitRedis()
+
 	// Initialize Cassandra
 	database.InitCassandra()
 
